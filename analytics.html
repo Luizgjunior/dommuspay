@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análises Financeiras</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Finance</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item">
+                        <a href="#" onclick="navigateToDashboard()">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="analytics.html">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Análises</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" onclick="navigateToTransactions()">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Transações</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" onclick="navigateToSettings()">
+                            <i class="fas fa-cog"></i>
+                            <span>Configurações</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <div class="theme-dot dark active"></div>
+                    <div class="theme-dot light"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>Análises Financeiras</h1>
+                    <p>Insights detalhados sobre seus gastos e receitas</p>
+                </div>
+                
+                <div class="header-center">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Pesquisar análises...">
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40x40/6366f1/ffffff?text=U" alt="Usuário">
+                        <span>Usuário</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Analytics Content -->
+            <div class="analytics-content">
+                <!-- Filters Section -->
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label for="periodFilter">Período:</label>
+                        <select id="periodFilter">
+                            <option value="7">Últimos 7 dias</option>
+                            <option value="30" selected>Últimos 30 dias</option>
+                            <option value="90">Últimos 90 dias</option>
+                            <option value="365">Último ano</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="categoryFilter">Categoria:</label>
+                        <select id="categoryFilter">
+                            <option value="">Todas as categorias</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="typeFilter">Tipo:</label>
+                        <select id="typeFilter">
+                            <option value="">Todos os tipos</option>
+                            <option value="income">Receitas</option>
+                            <option value="expense">Despesas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <button class="btn-apply" id="applyFilters">
+                            <i class="fas fa-filter"></i>
+                            Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Receita Total</h3>
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="kpi-value" id="totalRevenue">R$ 0,00</div>
+                        <div class="kpi-change positive" id="revenueChange">+0%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Despesa Total</h3>
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="kpi-value" id="totalExpenses">R$ 0,00</div>
+                        <div class="kpi-change negative" id="expenseChange">+0%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Saldo Líquido</h3>
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="kpi-value" id="netBalance">R$ 0,00</div>
+                        <div class="kpi-change" id="balanceChange">+0%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <h3>Média Diária</h3>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="kpi-value" id="dailyAverage">R$ 0,00</div>
+                        <div class="kpi-change" id="averageChange">+0%</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <!-- Trend Chart -->
+                    <div class="chart-container large">
+                        <div class="chart-header">
+                            <h3>Tendência Temporal</h3>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-type="line">Linha</button>
+                                <button class="chart-btn" data-type="bar">Barras</button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Analysis -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Análise por Categoria</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="categoryAnalysisChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Monthly Comparison -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Comparação Mensal</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="monthlyComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analysis -->
+                <div class="analysis-sections">
+                    <!-- Top Categories -->
+                    <div class="analysis-section">
+                        <h2>Top Categorias de Gastos</h2>
+                        <div class="category-list" id="topCategories">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                    
+                    <!-- Spending Patterns -->
+                    <div class="analysis-section">
+                        <h2>Padrões de Gastos</h2>
+                        <div class="patterns-grid">
+                            <div class="pattern-card">
+                                <div class="pattern-icon">
+                                    <i class="fas fa-calendar-week"></i>
+                                </div>
+                                <div class="pattern-info">
+                                    <h4>Dia da Semana</h4>
+                                    <p id="topDay">Segunda-feira</p>
+                                </div>
+                            </div>
+                            
+                            <div class="pattern-card">
+                                <div class="pattern-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="pattern-info">
+                                    <h4>Horário Pico</h4>
+                                    <p id="peakTime">14:00 - 16:00</p>
+                                </div>
+                            </div>
+                            
+                            <div class="pattern-card">
+                                <div class="pattern-icon">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                                <div class="pattern-info">
+                                    <h4>Categoria Favorita</h4>
+                                    <p id="topCategory">Alimentação</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="data-table-section">
+                    <div class="table-header">
+                        <h2>Dados Detalhados</h2>
+                        <div class="table-controls">
+                            <button class="btn-export" id="exportData">
+                                <i class="fas fa-download"></i>
+                                Exportar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="analyticsTable">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Tipo</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="analytics.js"></script>
+</body>
+</html>

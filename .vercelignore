@@ -1,0 +1,41 @@
+# Arquivos de desenvolvimento
+node_modules/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos temporários
+.tmp/
+.temp/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de backup
+*.backup
+*.bak
+
+# Arquivos de configuração local
+config.env.example
+NEONDB_SETUP.md
+SISTEMA_CONTROLE_FINANCEIRO_COMPLETO.md
+
+# Scripts de desenvolvimento
+start.bat
+start.sh
+
+# Banco SQLite (não usado em produção)
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de documentação
+README.md
