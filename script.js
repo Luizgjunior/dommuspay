@@ -845,6 +845,10 @@ function navigateToSettings() {
     window.location.href = 'settings.html';
 }
 
+// Inicializar API e Dashboard
+window.financeAPI = new FinanceAPI();
+window.dashboard = new DashboardFinance();
+
 // Garantir que as funções estejam disponíveis globalmente
 window.navigateToAnalytics = navigateToAnalytics;
 window.navigateToTransactions = navigateToTransactions;

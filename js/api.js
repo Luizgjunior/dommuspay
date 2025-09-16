@@ -1,7 +1,7 @@
 // Classe para gerenciar comunicação com a API
 class FinanceAPI {
     constructor() {
-        this.baseURL = process.env.NODE_ENV === 'production' ? '/api' : '/api';
+        this.baseURL = '/api';
         this.token = localStorage.getItem('finance_token');
     }
 
