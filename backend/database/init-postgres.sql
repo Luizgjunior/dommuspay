@@ -1,8 +1,11 @@
 -- Inicialização do banco PostgreSQL para Sistema de Controle Financeiro
 
+-- Habilitar extensão UUID
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- Tabela de usuários
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -16,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Tabela de categorias personalizadas
 CREATE TABLE IF NOT EXISTS categories (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
     name VARCHAR(255) NOT NULL,
     type VARCHAR(10) NOT NULL CHECK (type IN ('income', 'expense')),
@@ -28,7 +31,7 @@ CREATE TABLE IF NOT EXISTS categories (
 
 -- Tabela de transações
 CREATE TABLE IF NOT EXISTS transactions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
     description TEXT NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
@@ -42,7 +45,7 @@ CREATE TABLE IF NOT EXISTS transactions (
 
 -- Tabela de configurações do usuário
 CREATE TABLE IF NOT EXISTS user_settings (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
     monthly_limit DECIMAL(10,2) DEFAULT 0,
     daily_limit DECIMAL(10,2) DEFAULT 0,
@@ -62,30 +65,69 @@ CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id);
 
--- Inserir usuário demo
-INSERT INTO users (id, name, email, password_hash) VALUES 
-('550e8400-e29b-41d4-a716-446655440000', 'Usuário Demo', 'demo@financeiro.com', '$2a$10$demo.hash.here')
-ON CONFLICT (email) DO NOTHING;
+-- Inserir usuário demo (apenas se não existir)
+INSERT INTO users (id, name, email, password_hash) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Usuário Demo', 'demo@financeiro.com', '$2a$10$demo.hash.here'
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'demo@financeiro.com');
 
--- Inserir categorias padrão para usuário demo
-INSERT INTO categories (user_id, name, type, color, icon) VALUES 
-('550e8400-e29b-41d4-a716-446655440000', 'Salário', 'income', '#10b981', 'fas fa-money-bill-wave'),
-('550e8400-e29b-41d4-a716-446655440000', 'Freelance', 'income', '#3b82f6', 'fas fa-laptop'),
-('550e8400-e29b-41d4-a716-446655440000', 'Investimentos', 'income', '#8b5cf6', 'fas fa-chart-line'),
-('550e8400-e29b-41d4-a716-446655440000', 'Vendas', 'income', '#f59e0b', 'fas fa-shopping-cart'),
-('550e8400-e29b-41d4-a716-446655440000', 'Outros', 'income', '#6b7280', 'fas fa-ellipsis-h'),
-('550e8400-e29b-41d4-a716-446655440000', 'Alimentação', 'expense', '#ef4444', 'fas fa-utensils'),
-('550e8400-e29b-41d4-a716-446655440000', 'Moradia', 'expense', '#f59e0b', 'fas fa-home'),
-('550e8400-e29b-41d4-a716-446655440000', 'Transporte', 'expense', '#3b82f6', 'fas fa-car'),
-('550e8400-e29b-41d4-a716-446655440000', 'Saúde', 'expense', '#10b981', 'fas fa-heart'),
-('550e8400-e29b-41d4-a716-446655440000', 'Educação', 'expense', '#8b5cf6', 'fas fa-graduation-cap'),
-('550e8400-e29b-41d4-a716-446655440000', 'Lazer', 'expense', '#ec4899', 'fas fa-gamepad'),
-('550e8400-e29b-41d4-a716-446655440000', 'Roupas', 'expense', '#f97316', 'fas fa-tshirt'),
-('550e8400-e29b-41d4-a716-446655440000', 'Contas', 'expense', '#ef4444', 'fas fa-file-invoice'),
-('550e8400-e29b-41d4-a716-446655440000', 'Outros', 'expense', '#6b7280', 'fas fa-ellipsis-h')
-ON CONFLICT (id) DO NOTHING;
+-- Inserir categorias padrão para usuário demo (apenas se não existirem)
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Salário', 'income', '#10b981', 'fas fa-money-bill-wave'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Salário');
 
--- Inserir configurações do usuário demo
-INSERT INTO user_settings (user_id, monthly_limit, daily_limit, alert_threshold) VALUES 
-('550e8400-e29b-41d4-a716-446655440000', 5000.00, 200.00, 80)
-ON CONFLICT (user_id) DO NOTHING;
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Freelance', 'income', '#3b82f6', 'fas fa-laptop'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Freelance');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Investimentos', 'income', '#8b5cf6', 'fas fa-chart-line'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Investimentos');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Vendas', 'income', '#f59e0b', 'fas fa-shopping-cart'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Vendas');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Outros', 'income', '#6b7280', 'fas fa-ellipsis-h'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Outros');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Alimentação', 'expense', '#ef4444', 'fas fa-utensils'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Alimentação');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Moradia', 'expense', '#f59e0b', 'fas fa-home'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Moradia');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Transporte', 'expense', '#3b82f6', 'fas fa-car'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Transporte');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Saúde', 'expense', '#10b981', 'fas fa-heart'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Saúde');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Educação', 'expense', '#8b5cf6', 'fas fa-graduation-cap'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Educação');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Lazer', 'expense', '#ec4899', 'fas fa-gamepad'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Lazer');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Roupas', 'expense', '#f97316', 'fas fa-tshirt'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Roupas');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Contas', 'expense', '#ef4444', 'fas fa-file-invoice'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Contas');
+
+INSERT INTO categories (user_id, name, type, color, icon) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 'Outros', 'expense', '#6b7280', 'fas fa-ellipsis-h'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE user_id = '550e8400-e29b-41d4-a716-446655440000' AND name = 'Outros');
+
+-- Inserir configurações do usuário demo (apenas se não existir)
+INSERT INTO user_settings (user_id, monthly_limit, daily_limit, alert_threshold) 
+SELECT '550e8400-e29b-41d4-a716-446655440000', 5000.00, 200.00, 80
+WHERE NOT EXISTS (SELECT 1 FROM user_settings WHERE user_id = '550e8400-e29b-41d4-a716-446655440000');

@@ -9,7 +9,7 @@ Sistema web completo para controle de receitas e despesas pessoais, desenvolvido
 
 ## 🚀 Demo
 
-**🌐 Acesse:** [dommuspay.vercel.app](https://dommuspay.vercel.app)
+**🌐 Acesse:** [dommuspay.vercel.app](https://dommuspay.vercel.app) *(em breve)*
 
 **👤 Login Demo:**
 - **Email:** demo@financeiro.com

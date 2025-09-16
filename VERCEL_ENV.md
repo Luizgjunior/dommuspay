@@ -6,7 +6,7 @@ Configure as seguintes variáveis no painel da Vercel:
 
 ### **1. DATABASE_URL**
 ```
-postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require
+postgresql://neondb_owner:npg_kFAY83PowTKy@ep-gentle-term-ae2o1akf-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
 ```
 
 ### **2. JWT_SECRET**
@@ -21,7 +21,7 @@ production
 
 ### **4. FRONTEND_URL**
 ```
-https://seu-projeto.vercel.app
+https://dommuspay.vercel.app
 ```
 
 ## 🚀 Como Configurar
