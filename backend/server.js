@@ -1,5 +1,10 @@
 require('dotenv').config();
 const express = require('express');
+
+// Verificar se as variáveis de ambiente estão carregadas
+console.log('🔍 Verificando variáveis de ambiente:');
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? '✅ Carregada' : '❌ Não encontrada');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'não definido');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -15,8 +20,22 @@ const userRoutes = require('./src/routes/users');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware de segurança
-app.use(helmet());
+// Middleware de segurança com CSP personalizado
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+            scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https:"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+            connectSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"],
+        },
+    },
+}));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -39,8 +58,18 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Servir arquivos estáticos do frontend
-app.use(express.static(path.join(__dirname, '../')));
+// Servir arquivos estáticos do frontend com MIME types corretos
+app.use(express.static(path.join(__dirname, '../'), {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        } else if (filePath.endsWith('.html')) {
+            res.setHeader('Content-Type', 'text/html');
+        }
+    }
+}));
 
 // Conectar ao banco de dados
 database.connect().catch(console.error);
